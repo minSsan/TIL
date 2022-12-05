@@ -139,3 +139,41 @@ export const Main = () => {
   }, [name]);
 };
 ```
+
+> 추가로, `useEffect`에서 return 으로 반환한 `clean up 함수`는 매번 effect가 실행되기 전에 호출되기도 한다. 즉, `clean up 함수`는 _**effect가 실행되기 전**_ 과, _**unmount될 때**_ 실행된다.  
+> [👉🏻 참고 블로그 포스팅](https://jungpaeng.tistory.com/92)
+>
+> 해당 내용을 참고하여 기존에 작성했던 코드를 아래와 같이 수정하였다.
+
+<br>
+
+`수정 전`
+
+```jsx
+const [todos, setTodos] = useState();
+
+useEffect(() => {
+  const todosData = JSON.parse(localStorage.getItem("todos") ?? "[]");
+  setTodos(todosData);
+}, []);
+```
+
+<br>
+
+`수정 후`
+
+```jsx
+import { useState } from "react";
+
+const [todos, setTodos] = useState();
+
+useEffect(() => {
+  const todosData = JSON.parse(localStorage.getItem("todos") ?? "[]");
+  setTodos(todosData);
+}, [setTodos]);
+```
+
+> `useState`를 선언할 때 **state 값**과 **setState 함수**가 할당되는데, 이때 `setState(setter 함수)`는 **매 렌더링마다 재생성되지 않는다.** 그리고 위의 이펙트 함수의 경우에는, 이펙트 함수 내부에서 `setTodos`만 사용하고 있기 때문에 **deps 배열**에 `setTodos`를 담아주는 것이 _좋다._
+>
+> 담아주어야 한다고 표현하지 않고, 담아주는 것이 좋다고 표현한 이유는, 사실 이 어플리케이션에서는 **deps**를 _빈 배열_ 로 둬도 큰 문제가 없기 때문이다. 왜냐하면 `Referentially Stable` _(참조적 안정성 - 대충 `참조 값`이 **항상 `최신 값`을 가리키는 것** 을 의미하는 것 같다)_ 을 위해서 넣어주는 것이 좋다고 한다.  
+> [👉🏻 참고 포스팅](https://www.reddit.com/r/reactjs/comments/tbt2z8/do_i_need_to_setter_functions_to_the_dependency/)
