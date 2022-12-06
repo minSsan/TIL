@@ -183,9 +183,12 @@ useEffect(() => {
 
 <hr>
 
-> `useState`를 선언할 때 **state 값**과 **setState 함수**가 할당되는데, 이때 `setState(setter 함수)`는 **매 렌더링마다 재생성되지 않는 특징을 갖고 있다.** 그리고 위의 이펙트 함수의 경우에는, 이펙트 함수 내부에서 `setTodos`만 사용하고 있기 때문에 **deps 배열**에 `setTodos`를 담아주는 것이 _좋다._
+> `useState`를 선언할 때 **state 값**과 **setState 함수**가 할당되는데, 이때 `setState(setter 함수)`는 **매 렌더링마다 재생성되지 않는 특징을 갖고 있다.**
 >
-> 담아주어야 한다고 표현하지 않고, 담아주는 것이 좋다고 표현한 이유는, 사실 이 어플리케이션에서는 **deps**를 _빈 배열_ 로 둬도 실행할 때 큰 문제가 없기 때문이다. _(첫 렌더링 이후 `setTodos`가 변경될 일이 없기 때문이다)_
+> 위 예제 코드의 `이펙트 함수`의 경우, 내부에서 `setTodos`를 사용하고 있다.  
+> 하지만 앞서 언급했듯 `setState` 함수는 <U>**매 렌더링마다 재생성되지 않으**</U>므로, `deps 배열`에 넣어주지 않아도 `Referentially Stable` _(참조 값이 **항상 최신 값을 가리키는 것** 을 의미)_ 한 상태를 유지할 수 있다.
 >
-> 하지만, `Referentially Stable` _(참조적 안정성 - 대충 `참조 값`이 **항상 `최신 값`을 가리키는 것** 을 의미하는 것 같다)_ 을 위해서 넣어주는 것이 좋다.  
+> 하지만, `커스텀 훅`을 사용하는 경우, 해당 훅이 반환하는 setter 함수가 `Referentially Stable`하지 않을 수 있기 때문에, 어쨌든 `deps 배열` 안에 setter 함수를 넣어주는 것이 **좋은 습관(?)** 이라고 한다.  
 > [👉🏻 참고 포스팅](https://www.reddit.com/r/reactjs/comments/tbt2z8/do_i_need_to_setter_functions_to_the_dependency/)
+>
+> 따라서, 사실 이 코드에서는 커스텀 훅을 사용하지 않았기 때문에 deps 배열에 setter를 넣든 안 넣든 똑같지만, 관습상(?) 넣어주었다.
