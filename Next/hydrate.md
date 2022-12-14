@@ -186,17 +186,15 @@ const Recruiting = forwardRef((props, ref) => {
 ```
 
 > 근데 지금 생각해보니 hydrate error는 p 태그 안에 span 태그를 넣어서 떴던 것 같다 ..  
-> 어쨌든 위 코드도 `hydrate error`는 아니지만, **_phraseRef.current가 undefined_**라는 오류가 발생한다.
+> 어쨌든 위 코드도 `hydrate error`는 아니지만, **_phraseRef.current가 undefined_** 라는 오류가 발생한다.
 
 <br>
 
-우선, 애니메이션을 적용할 DOM에 접근하기 위해서 `useRef`를 사용한 상황이였다.
+일단 클라이언트에서 실행되는 코드 상에는 엘리먼트에 ref를 잘 설정했기 때문에, **개발자 도구**에서 next 서버가 **_pre-rendering_** 한 `HTML파일`을 확인했다.
 
-일단 클라이언트에서 실행되는 코드 상에는 엘리먼트에 ref를 잘 설정했기 때문에, **개발자 도구**에서 next 서버가 **_pre-rendering_** 한 `HTML파일`을 열어보았다.
+그리고 해당 엘리먼트에 **_ref 값이 할당되어 있지 않은 것_** 을 확인할 수 있었다.
 
-하지만 해당 파일에서는 **_ref 값이 할당되어 있지 않은 것_**을 확인할 수 있었다.
-
-따라서, ref를 참조하여 애니메이션을 바꾸는 작업은 클라이언트에서 작업하도록 하기 위해, `useLayoutEffect`에 담아서 문제를 해결하였다.
+따라서, ref를 참조하여 엘리먼트의 스타일을 바꾸는 작업은 클라이언트에서만 작업할 수 있도록 하기 위해, `useLayoutEffect`로 문제를 해결하였다.
 
 ```jsx
 useLayoutEffect(() => {
@@ -204,7 +202,7 @@ useLayoutEffect(() => {
 }, [windowDimensions.width, windowDimensions.height]);
 ```
 
-> 여기서 `useEffect` 대신 `useLayoutEffect`를 사용한 이유는, **textHeight** 값이 **_특정 요소의 높이에 영향_**을 주기 때문이다.  
+> 여기서 `useEffect` 대신 `useLayoutEffect`를 사용한 이유는, **textHeight** 값이 **_특정 요소의 높이에 영향_** 을 주기 때문이다.  
 > 따라서, 브라우저에 paint 하기 전에 **textHeight** 값이 확정될 수 있도록 `useLayoutEffect`를 사용하였다.
 
 <br>
